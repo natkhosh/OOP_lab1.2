@@ -31,16 +31,16 @@ class Date:
                     (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
 
     def __init__(self, *args):
-        if len(args) == 0:
-            now = datetime.datetime.now()
-            self.__year = now.year
-            self.__month = now.month
-            self.__day = now.day
-        else:
+        if len(args) >= 3:
             self.is_valid_date(args[0], args[1], args[2])
             self.__year = args[0]
             self.__month = args[1]
             self.__day = args[2]
+        else:
+            now = datetime.datetime.now()
+            self.__year = now.year
+            self.__month = now.month
+            self.__day = now.day
 
     def __str__(self):
         return self.date
@@ -124,9 +124,6 @@ class Date:
                 elif self.__day < other.day:
                     return False
 
-    def __int__(self):
-        return self.__year * 365 + self.__month * 30 + self.__day
-
     @property
     def day(self):
         return self.__day
@@ -208,6 +205,15 @@ class Date:
         self.__month = month
         self.__year = year
 
+    def __int__(self):
+        if self.is_leap_year(self.__year):
+            days = self.__year * 366
+        else:
+            days = self.__year * 365
+        days += self.get_max_day(self.__year, self.__month) * self.__month + self.__day
+        return days
+
+
     def add_year(self, year):
         self.__year += year
         return self.__year
@@ -242,4 +248,4 @@ date_my = Date(2020, 10, 11)
 date_now = Date(10)
 print(date_my)
 print(date_now)
-
+print(date_now.__int__())
