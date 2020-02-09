@@ -18,7 +18,7 @@
 #     __rsub__(self, other).
 #     __iadd__(self, other) - +=.
 #     __isub__(self, other) - -=.
-# 5. Переопределить преобразование типа в int.
+# + 5. Переопределить преобразование типа в int.
 #     __int__(self)
 # + 6. Перегрузить конструктор класса
 # 7. Написать тесты для проверки реализованного функционала (Необязательное)
@@ -30,14 +30,17 @@ class Date:
     DAY_OF_MONTH = ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
                     (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
 
-    def __init__(self, year, month, day):
-        
-        self.is_valid_date(year, month, day)
-        self.__year = year
-        self.__month = month
-        self.__day = day
-
-
+    def __init__(self, *args):
+        if len(args) == 0:
+            now = datetime.datetime.now()
+            self.__year = now.year
+            self.__month = now.month
+            self.__day = now.day
+        else:
+            self.is_valid_date(args[0], args[1], args[2])
+            self.__year = args[0]
+            self.__month = args[1]
+            self.__day = args[2]
 
     def __str__(self):
         return self.date
@@ -120,6 +123,9 @@ class Date:
                     return True
                 elif self.__day < other.day:
                     return False
+
+    def __int__(self):
+        return self.__year * 365 + self.__month * 30 + self.__day
 
     @property
     def day(self):
@@ -233,6 +239,7 @@ class Date:
 
 
 date_my = Date(2020, 10, 11)
-date_now = Date()
+date_now = Date(10)
 print(date_my)
 print(date_now)
+
