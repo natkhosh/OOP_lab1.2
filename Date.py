@@ -1,36 +1,22 @@
-#TODO
-# + 1. Реализовать класс Date согласно шаблону
-#     1.1 Конструктор класса
-#     1.2 Свойства для дня, месяца, года
-#     1.3 Сеттеры и геттеры для свойств
-# + 2. Реализовать методы add_day, add_month, add_year
-# 3. Переопределить магические методы для класса Date:
-#    + __lt__(self, other) - x < y вызывает x.__lt__(y).
-#    + __le__(self, other) - x ≤ y вызывает x.__le__(y).
-#    + __eq__(self, other) - x == y вызывает x.__eq__(y).
-#    + __ne__(self, other) - x != y вызывает x.__ne__(y)
-#    + __gt__(self, other) - x > y вызывает x.__gt__(y).
-#    + __ge__(self, other) - x ≥ y вызывает x.__ge__(y).
-# 4. Перегрузка арифметических операторов для класса Date:
-#     __add__(self, other) - сложение. x + y вызывает x.__add__(y).
-#     __sub__(self, other) - вычитание (x - y).
-#     __radd__(self, other).
-#     __rsub__(self, other).
-#     __iadd__(self, other) - +=.
-#     __isub__(self, other) - -=.
-# + 5. Переопределить преобразование типа в int.
-#     __int__(self)
-# + 6. Перегрузить конструктор класса
-# 7. Написать тесты для проверки реализованного функционала (Необязательное)
+# Лабораторная работа № 1.2
+
+# Слушатель (ФИО): Мокрушина Н.Ю.
+
 
 import datetime
-
+from datetime import date
 
 class Date:
     DAY_OF_MONTH = ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
                     (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
 
     def __init__(self, *args):
+        """Examples:
+            Format: year, month, day
+            d1 = Date(2020, 2, 20)      # 20.2.2020
+            d2 = Date()                 # current date
+            d3 = Date(2020)             # current date
+        """
         if len(args) >= 3:
             self.is_valid_date(args[0], args[1], args[2])
             self.__year = args[0]
@@ -48,81 +34,22 @@ class Date:
     def __repr__(self):
         return f'Date({self.__year!r}, {self.__month!r}, {self.__day!r})'
 
-    def __lt__(self, other):
-        if self.__year < other.year:
-            return True
-        elif self.__year > other.year:
-            return False
-        else:
-            if self.__month < other.month:
-                return True
-            elif self.__month > other.month:
-                return False
-            else:
-                if self.__day < other.day:
-                    return True
-                elif self.__day >= other.day:
-                    return False
-
-    def __le__(self, other):
-        if self.__year <= other.year:
-            return True
-        elif self.__year > other.year:
-            return False
-        else:
-            if self.__month <= other.month:
-                return True
-            elif self.__month > other.month:
-                return False
-            else:
-                if self.__day <= other.day:
-                    return True
-                elif self.__day > other.day:
-                    return False
-
-    def __eq__(self, other):
-        if (self.__day == other.day) and (self.__month == other.month) and (self.__year == other.year):
-            return True
-        else:
-            return False
-
-    def __ne__(self, other):
-        if (self.__day != other.day) or (self.__month != other.month) or (self.__year != other.year):
-            return True
-        else:
-            return False
-
-    def __gt__(self, other):
-        if self.__year > other.year:
-            return True
-        elif self.__year < other.year:
-            return False
-        else:
-            if self.__month > other.month:
-                return True
-            elif self.__month < other.month:
-                return False
-            else:
-                if self.__day > other.day:
-                    return True
-                elif self.__day <= other.day:
-                    return False
-
-    def __ge__(self, other):
-        if self.__year >= other.year:
-            return True
-        elif self.__year < other.year:
-            return False
-        else:
-            if self.__month >= other.month:
-                return True
-            elif self.__month < other.month:
-                return False
-            else:
-                if self.__day >= other.day:
-                    return True
-                elif self.__day < other.day:
-                    return False
+    def __int__(self):
+        """  Override conversion type to int
+        Example:
+            date2 = Date(2020, 1, 12) --> 737985
+        :return: days: int --> number of days
+        """
+        # года: текущий год делить на 3 = кол-во високосных их умножаем на 366, и прибавляем
+        # текущий год минус високосные умноженные на 365
+        print(f'Дата >  {self.__str__()}')
+        days = ((self.__year // 3) * 366) + ((self.__year - (self.__year // 3)) * 365)
+        # месяцы: идем в цикле от первого месяца до текущего и суммиурем дни в месяцах
+        for i in range(1, self.__month):
+            days += self.get_max_day(self.__year, i)
+        # дни: суммируем текущий день
+        days += self.__day
+        return days
 
     @property
     def day(self):
@@ -205,15 +132,6 @@ class Date:
         self.__month = month
         self.__year = year
 
-    def __int__(self):
-        if self.is_leap_year(self.__year):
-            days = self.__year * 366
-        else:
-            days = self.__year * 365
-        days += self.get_max_day(self.__year, self.__month) * self.__month + self.__day
-        return days
-
-
     def add_year(self, year):
         self.__year += year
         return self.__year
@@ -241,11 +159,48 @@ class Date:
 
     @staticmethod
     def date2_date1(date2, date1):
-        pass
+        if date2 < date1:
+            raise ValueError
+        else:
+            days_diff = date2.__int__() - date1.__int__()
+            print(f'Разница дней: {days_diff}')
 
 
-date_my = Date(2020, 10, 11)
-date_now = Date(10)
-print(date_my)
-print(date_now)
-print(date_now.__int__())
+
+if __name__ == "__main__":
+    date_my = Date(2020, 4, 12)
+    print(f'Число дней: {date_my.__int__()}')
+
+    date1 = Date(2019, 1, 22)
+    date2 = Date(2020, 1, 12)
+
+    # dateSub = Date.date2_date1(date2, date1)
+    # print(f'Число дней: {dateSub}')
+    date_my.day = 5
+    print(date_my.day)
+    print(date_my.__str__())
+#
+# # print(date1.__int__())
+# print(date2.__int__())
+
+
+
+# print(date1.__int2__(date1))
+# print(date2.__int2__(date2))
+
+
+# d1 = Date(2020, 1, 10)
+# print(d1.__sub__(6))
+# d1_1 = Date(2020, 2, 7)
+# d3 = Date()
+# print(d3.__str__())
+# print('----')
+
+#
+# 100 + d1_1
+# # print('----')
+# d1 - 5
+# print(d1)
+
+# print('---')
+# d1 + 11
