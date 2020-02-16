@@ -21,8 +21,8 @@
 #    + __sub__(self, other) - вычитание (x - y).
 #    + __radd__(self, other).
 #    + __rsub__(self, other).
-#     __iadd__(self, other) - +=.
-#     __isub__(self, other) - -=.
+#    + __iadd__(self, other) - +=.
+#    + __isub__(self, other) - -=.
 # + 5. Переопределить преобразование типа в int.
 #     __int__(self)
 # + 6. Перегрузить конструктор класса
@@ -65,15 +65,12 @@ class Date:
             date2 = Date(2020, 1, 12) --> 737985
         :return: days: int --> number of days
         """
-        # года: текущий год делить на 3 = кол-во високосных их умножаем на 366, и прибавляем
-        # текущий год минус високосные умноженные на 365
         print(f'Дата >  {self.__str__()}')
         days = ((self.__year // 3) * 366) + ((self.__year - (self.__year // 3)) * 365)
-        # месяцы: идем в цикле от первого месяца до текущего и суммиурем дни в месяцах
         for i in range(1, self.__month):
             days += self.get_max_day(self.__year, i)
-        # дни: суммируем текущий день
         days += self.__day
+        print(f'Дней: {days}')
         return days
 
     def __lt__(self, other):
@@ -196,7 +193,7 @@ class Date:
             raise ValueError('Date must be positive')
         else:
             self.add_day(other)
-            print(f'Полученная дата > {self.__str__()}')
+            print(f'Полученная дата > {self.__day}.{self.__month}.{self.__year}')
 
     def __radd__(self, other):
         """ __add__(self, other) --> y + x
@@ -215,50 +212,110 @@ class Date:
             print(f'Полученная дата > {self.__day}.{self.__month}.{self.__year}')
 
     def __sub__(self, other):
-        x = other - self.__day
-        if x < 0:
-            self.__day -= other
-        elif x == 0:
-            self.__day = 1
+        """"
+        __sub__(self, other) --> x - y
+            вызывает x.__sub__(y)
+            Example:
+                date_2 = Date(2020, 1, 1)
+                date_2 - 5                # Полученная дата > 28.12.2019
+            :param other: int
+        """
+        if not isinstance(other, int):
+            raise ValueError
+        elif other < 0:
+            raise ValueError('Date must be positive')
         else:
-            self.__month = self.__month - 1
-            if self.__month == 0:
-                self.__month = 12
-                self.__year = self.__year - 1
-                self.__day = self.get_max_day(self.__year, self.__month)
-            else:
-                self.__day = self.get_max_day(self.__year, self.__month)
-
-            if x < self.get_max_day(self.__year, self.__month):
-                self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+            x = other - self.__day
+            if x < 0:
+                self.__day -= other
             elif x == 0:
-                self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                self.__day = 1
             else:
-                self.__sub__(x)
-        return f'Полученная дата > {self.date}'
+                self.__month = self.__month - 1
+                if self.__month == 0:
+                    self.__month = 12
+                    self.__year = self.__year - 1
+                    self.__day = self.get_max_day(self.__year, self.__month)
+                else:
+                    self.__day = self.get_max_day(self.__year, self.__month)
+
+                if x < self.get_max_day(self.__year, self.__month):
+                    self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                elif x == 0:
+                    self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                else:
+                    self.__sub__(x)
+            return f'Полученная дата > {self.date}'
 
     def __rsub__(self, other):
-        x = other - self.__day
-        if x < 0:
-            self.__day -= other
-        elif x == 0:
-            self.__day = 1
+        """"
+        __rsub__(self, other) --> y - x
+            вызывает y.__sub__(x)
+            Example:
+                date_2 = Date(2019, 12, 28)
+                30 - date_2                # Полученная дата > 29.11.2019
+            :param other: int
+        """
+        if not isinstance(other, int):
+            raise ValueError
+        elif other < 0:
+            raise ValueError('Date must be positive')
         else:
-            self.__month = self.__month - 1
-            if self.__month == 0:
-                self.__month = 12
-                self.__year = self.__year - 1
-                self.__day = self.get_max_day(self.__year, self.__month)
-            else:
-                self.__day = self.get_max_day(self.__year, self.__month)
-
-            if x < self.get_max_day(self.__year, self.__month):
-                self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+            x = other - self.__day
+            if x < 0:
+                self.__day -= other
             elif x == 0:
-                self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                self.__day = 1
             else:
-                self.__sub__(x)
-        return f'Полученная дата > {self.date}'
+                self.__month = self.__month - 1
+                if self.__month == 0:
+                    self.__month = 12
+                    self.__year = self.__year - 1
+                    self.__day = self.get_max_day(self.__year, self.__month)
+                else:
+                    self.__day = self.get_max_day(self.__year, self.__month)
+
+                if x < self.get_max_day(self.__year, self.__month):
+                    self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                elif x == 0:
+                    self.__day = self.get_max_day(self.__year, self.__month) - x + 1
+                else:
+                    self.__sub__(x)
+            return f'Полученная дата > {self.date}'
+
+    def __iadd__(self, other):
+        """"
+        __iadd__(self, other) -->   +=
+            вызывает x.__iadd__(y)
+            Example:
+                date = Date(2020, 1, 1)
+                date += 15                # Полученная дата > 16.1.2020
+            :param other: int
+        """
+        if not isinstance(other, int):
+            raise ValueError
+        elif other < 0:
+            raise ValueError('Date must be positive')
+        else:
+            self.__add__(other)
+            return self
+
+    def __isub__(self, other):
+        """"
+       __isub__(self, other) -->   -=
+            вызывает x.__isub__(y)
+            Example:
+                date = Date(2020, 1, 16)
+                date -= 10                # Полученная дата > 1.1.2020
+            :param other: int
+        """
+        if not isinstance(other, int):
+            raise ValueError
+        elif other < 0:
+            raise ValueError('Date must be positive')
+        else:
+            self.__sub__(other)
+            return self
 
     @property
     def day(self):
@@ -413,34 +470,41 @@ if __name__ == "__main__":
     d1.add_year(5)
     print(d1.date)
 
-    print('\n')
+    date1 = Date(2020, 1, 22)
+    date2 = Date(2020, 2, 12)
 
-    date1 = Date(2019, 1, 22)
-    date2 = Date(2020, 1, 12)
-
+    print('----\n Method > date2_date1')
     dateSub = Date.date2_date1(date2, date1)
-    print('\n')
 
-    print(date1 < date2, '\n')
+    print('----\nПеревод даты в дни -->')
+    date1.__int__()
+    date2.__int__()
 
-    print(date1.__int__())
-    print(date2.__int__())
-
-    print('\n')
-    d1 = Date(2020, 1, 10)
-    print(d1.__sub__(6))
-    d1_1 = Date(2020, 2, 7)
+    print('\nПерегрузка __init__ -->  current date')
     d3 = Date()
-    print(d3.__str__())
-    print('----')
+    print(d3)
+
+    print('----\n Method > __lt__')
+    print(date1 < date2)
 
     date_1 = Date(2020, 1, 1)
+    print('----\n Method > __add__')
     100 + date_1
-    date_1 + 15
-    print('----')
 
+    print('----\n Method > __radd__')
+    date_1 + 15
+
+    print('----\n Method > __sub__')
     date_2 = Date(2020, 1, 1)
     print(f'{date_2 - 5}')
 
+    print('----\n Method > __rsub__')
     print(f'{30 - date_2}')
 
+    print('----\n Method > __iadd__')
+    date_3 = Date(2020, 1, 1)
+    date_3 += 15
+
+    print('----\n Method > __isub__')
+    date_4 = Date(2020, 1, 16)
+    date_4 -= 15
