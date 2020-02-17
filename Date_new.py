@@ -31,6 +31,7 @@
 import datetime
 from datetime import date
 
+
 class Date:
     DAY_OF_MONTH = ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
                     (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
