@@ -192,7 +192,6 @@ class Date:
             raise ValueError('Date must be positive')
         else:
             self.add_day(other)
-            print(f'Полученная дата > {self.__day}.{self.__month}.{self.__year}')
             return self
 
     def __radd__(self, other):
@@ -209,7 +208,6 @@ class Date:
             raise ValueError('Date must be positive')
         else:
             self.add_day(other)
-            print(f'Полученная дата > {self.__day}.{self.__month}.{self.__year}')
             return self
 
     def __sub__(self, other):
@@ -246,7 +244,6 @@ class Date:
                     self.__day = self.get_max_day(self.__year, self.__month) - x + 1
                 else:
                     self.__sub__(x)
-
             return self
 
     def __rsub__(self, other):
@@ -282,7 +279,7 @@ class Date:
                 elif x == 0:
                     self.__day = self.get_max_day(self.__year, self.__month) - x + 1
                 else:
-                    self.__sub__(x)
+                    self.__rsub__(x)
             return self
 
     def __iadd__(self, other):
